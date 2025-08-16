@@ -10,7 +10,7 @@ def download_kaggle_data():
     """
     
     # Cria a pasta csv se não existir
-    csv_folder = Path("data_raw/csv")
+    csv_folder = Path("dbt_olist/seeds")
     csv_folder.mkdir(parents=True, exist_ok=True)
     
     print("Baixando dados do Kaggle...")
