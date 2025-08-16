@@ -9,11 +9,11 @@ WITH source_data AS (
 renamed_and_casted AS (
 
     SELECT
-        CAST(geolocation_zip_code_prefix AS STRING) AS zip_code_prefix
-        , CAST(geolocation_lat AS NUMERIC) AS latitude
-        , CAST(geolocation_lng AS NUMERIC) AS longitude
-        , CAST(geolocation_city AS STRING) AS city
-        , CAST(geolocation_state AS STRING) AS state
+        CAST(geolocation_zip_code_prefix AS VARCHAR) AS zip_code_prefix
+        , CAST(geolocation_lat AS DECIMAL(11,8)) AS latitude
+        , CAST(geolocation_lng AS DECIMAL(11,8)) AS longitude
+        , CAST(geolocation_city AS VARCHAR) AS city
+        , CAST(geolocation_state AS VARCHAR) AS state
     FROM source_data
 
 )

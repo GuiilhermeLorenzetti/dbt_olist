@@ -33,11 +33,8 @@ models:
   dbt_olist:
     # Config indicated by + and applies to all files under models/example/
     silver:
-      +schema: silver
       +materialized: table
     gold:
-      +schema: gold
       +materialized: view
 seeds: 
   dbt_olist:
-    +schema: bronze

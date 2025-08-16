@@ -9,10 +9,10 @@ WITH source_data AS (
 renamed_and_casted AS (
 
     SELECT
-        CAST(seller_id AS STRING) AS seller_id
-        , CAST(seller_zip_code_prefix AS STRING) AS seller_zip_code_prefix
-        , CAST(seller_city AS STRING) AS seller_city
-        , CAST(seller_state AS STRING) AS seller_state
+        CAST(seller_id AS VARCHAR) AS seller_id
+        , CAST(seller_zip_code_prefix AS VARCHAR) AS seller_zip_code_prefix
+        , CAST(seller_city AS VARCHAR) AS seller_city
+        , CAST(seller_state AS VARCHAR) AS seller_state
     FROM source_data
 
 )

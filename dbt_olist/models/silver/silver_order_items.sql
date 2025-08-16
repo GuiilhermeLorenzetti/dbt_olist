@@ -9,13 +9,13 @@ WITH source_data AS (
 renamed_and_casted AS (
 
     SELECT
-        CAST(order_id AS STRING) AS order_id
-        , CAST(order_item_id AS INT64) AS order_item_id
-        , CAST(product_id AS STRING) AS product_id
-        , CAST(seller_id AS STRING) AS seller_id
+        CAST(order_id AS VARCHAR) AS order_id
+        , CAST(order_item_id AS INTEGER) AS order_item_id
+        , CAST(product_id AS VARCHAR) AS product_id
+        , CAST(seller_id AS VARCHAR) AS seller_id
         , CAST(shipping_limit_date AS TIMESTAMP) AS shipping_limit_at
-        , CAST(price AS NUMERIC) AS price
-        , CAST(freight_value AS NUMERIC) AS freight_value
+        , CAST(price AS DECIMAL(10,2)) AS price
+        , CAST(freight_value AS DECIMAL(10,2)) AS freight_value
     FROM source_data
 
 )

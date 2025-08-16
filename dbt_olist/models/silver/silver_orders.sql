@@ -9,9 +9,9 @@ WITH source_data AS (
 renamed_and_casted AS (
 
     SELECT
-        CAST(order_id AS STRING) AS order_id
-        , CAST(customer_id AS STRING) AS customer_id
-        , CAST(order_status AS STRING) AS order_status
+        CAST(order_id AS VARCHAR) AS order_id
+        , CAST(customer_id AS VARCHAR) AS customer_id
+        , CAST(order_status AS VARCHAR) AS order_status
         , CAST(order_purchase_timestamp AS TIMESTAMP) AS purchase_timestamp
         , CAST(order_approved_at AS TIMESTAMP) AS approved_at
         , CAST(order_delivered_carrier_date AS TIMESTAMP) AS delivered_to_carrier_at

@@ -9,8 +9,8 @@ WITH source_data AS (
 renamed_and_casted AS (
 
     SELECT
-        CAST(product_category_name AS STRING) AS product_category_name
-        , CAST(product_category_name_english AS STRING) AS product_category_name_english
+        CAST(product_category_name AS VARCHAR) AS product_category_name
+        , CAST(product_category_name_english AS VARCHAR) AS product_category_name_english
     FROM source_data
 
 )

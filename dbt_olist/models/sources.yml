@@ -1,0 +1,181 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Camada bronze com dados brutos do Olist"
+    schema: bronze
+    tables:
+      - name: olist_customers_dataset
+        description: "Dataset de clientes do Olist"
+        columns:
+          - name: customer_id
+            description: "ID único do cliente"
+            tests:
+              - not_null
+              - unique
+          - name: customer_unique_id
+            description: "ID único do cliente (identificador único)"
+          - name: customer_zip_code_prefix
+            description: "Prefixo do CEP do cliente"
+          - name: customer_city
+            description: "Cidade do cliente"
+          - name: customer_state
+            description: "Estado do cliente"
+      
+      - name: olist_sellers_dataset
+        description: "Dataset de vendedores do Olist"
+        columns:
+          - name: seller_id
+            description: "ID único do vendedor"
+            tests:
+              - not_null
+              - unique
+          - name: seller_zip_code_prefix
+            description: "Prefixo do CEP do vendedor"
+          - name: seller_city
+            description: "Cidade do vendedor"
+          - name: seller_state
+            description: "Estado do vendedor"
+      
+      - name: olist_products_dataset
+        description: "Dataset de produtos do Olist"
+        columns:
+          - name: product_id
+            description: "ID único do produto"
+            tests:
+              - not_null
+              - unique
+          - name: product_category_name
+            description: "Nome da categoria do produto"
+          - name: product_name_lenght
+            description: "Comprimento do nome do produto"
+          - name: product_description_lenght
+            description: "Comprimento da descrição do produto"
+          - name: product_photos_qty
+            description: "Quantidade de fotos do produto"
+          - name: product_weight_g
+            description: "Peso do produto em gramas"
+          - name: product_length_cm
+            description: "Comprimento do produto em cm"
+          - name: product_height_cm
+            description: "Altura do produto em cm"
+          - name: product_width_cm
+            description: "Largura do produto em cm"
+      
+      - name: olist_orders_dataset
+        description: "Dataset de pedidos do Olist"
+        columns:
+          - name: order_id
+            description: "ID único do pedido"
+            tests:
+              - not_null
+              - unique
+          - name: customer_id
+            description: "ID do cliente"
+            tests:
+              - not_null
+          - name: order_status
+            description: "Status do pedido"
+          - name: order_purchase_timestamp
+            description: "Timestamp da compra"
+          - name: order_approved_at
+            description: "Timestamp de aprovação"
+          - name: order_delivered_carrier_date
+            description: "Data de entrega ao transportador"
+          - name: order_delivered_customer_date
+            description: "Data de entrega ao cliente"
+          - name: order_estimated_delivery_date
+            description: "Data estimada de entrega"
+      
+      - name: olist_order_items_dataset
+        description: "Dataset de itens dos pedidos do Olist"
+        columns:
+          - name: order_id
+            description: "ID do pedido"
+            tests:
+              - not_null
+          - name: order_item_id
+            description: "ID do item do pedido"
+            tests:
+              - not_null
+          - name: product_id
+            description: "ID do produto"
+            tests:
+              - not_null
+          - name: seller_id
+            description: "ID do vendedor"
+            tests:
+              - not_null
+          - name: shipping_limit_date
+            description: "Data limite para envio"
+          - name: price
+            description: "Preço do item"
+          - name: freight_value
+            description: "Valor do frete"
+      
+      - name: olist_order_payments_dataset
+        description: "Dataset de pagamentos dos pedidos do Olist"
+        columns:
+          - name: order_id
+            description: "ID do pedido"
+            tests:
+              - not_null
+          - name: payment_sequential
+            description: "Sequência do pagamento"
+          - name: payment_type
+            description: "Tipo de pagamento"
+          - name: payment_installments
+            description: "Número de parcelas"
+          - name: payment_value
+            description: "Valor do pagamento"
+      
+      - name: olist_order_reviews_dataset
+        description: "Dataset de avaliações dos pedidos do Olist"
+        columns:
+          - name: review_id
+            description: "ID único da avaliação"
+            tests:
+              - not_null
+              - unique
+          - name: order_id
+            description: "ID do pedido"
+            tests:
+              - not_null
+          - name: review_score
+            description: "Pontuação da avaliação"
+          - name: review_comment_title
+            description: "Título do comentário"
+          - name: review_comment_message
+            description: "Mensagem do comentário"
+          - name: review_creation_date
+            description: "Data de criação da avaliação"
+          - name: review_answer_timestamp
+            description: "Timestamp da resposta da avaliação"
+      
+      - name: olist_geolocation_dataset
+        description: "Dataset de geolocalização do Olist"
+        columns:
+          - name: geolocation_zip_code_prefix
+            description: "Prefixo do CEP"
+            tests:
+              - not_null
+          - name: geolocation_lat
+            description: "Latitude"
+          - name: geolocation_lng
+            description: "Longitude"
+          - name: geolocation_city
+            description: "Cidade"
+          - name: geolocation_state
+            description: "Estado"
+      
+      - name: product_category_name_translation
+        description: "Tradução dos nomes das categorias de produtos"
+        columns:
+          - name: product_category_name
+            description: "Nome da categoria em português"
+            tests:
+              - not_null
+          - name: product_category_name_english
+            description: "Nome da categoria em inglês"
+            tests:
+              - not_null
