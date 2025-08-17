@@ -2,37 +2,82 @@ version: 2
 
 models:
   - name: fct_order_details
-    description: "Tabela fato principal, denormalizada, com todos os detalhes de cada item de pedido. A base para a maioria das análises de BI."
+    description: "Tabela fato principal, denormalizada, com todos os detalhes de cada pedido incluindo pagamentos e avaliações."
+    tests:
+      - not_null_proportion:
+          column_name: order_id
+          at_least: 0.99
+      - not_null_proportion:
+          column_name: customer_id
+          at_least: 0.99
+      - not_null_proportion:
+          column_name: total_payment_value
+          at_least: 0.95
     columns:
       - name: order_id
-        description: "Identificador do pedido."
-      - name: customer_unique_id
-        description: "Identificador único do cliente."
-      - name: delivery_time_in_days
-        description: "Tempo em dias entre a compra e a entrega do pedido."
+        description: "Identificador único do pedido."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Identificador do cliente que fez o pedido."
+      - name: purchase_timestamp
+        description: "Data e hora da compra."
+      - name: approved_at
+        description: "Data e hora de aprovação do pedido."
+      - name: delivered_to_carrier_at
+        description: "Data e hora de entrega ao transportador."
+      - name: delivered_to_customer_at
+        description: "Data e hora de entrega ao cliente."
+      - name: estimated_delivery_at
+        description: "Data estimada de entrega."
+      - name: order_status
+        description: "Status atual do pedido."
+      - name: average_review_score
+        description: "Score médio das avaliações do pedido."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 5
       - name: total_payment_value
-        description: "Valor total pago pelo pedido, somando todos os métodos."
+        description: "Valor total pago pelo pedido, somando todos os métodos de pagamento."
+      - name: credit_card_payment_value
+        description: "Valor pago com cartão de crédito."
+      - name: boleto_payment_value
+        description: "Valor pago com boleto."
+      - name: other_payment_value
+        description: "Valor pago com outros métodos de pagamento."
+      - name: voucher_payment_value
+        description: "Valor pago com voucher."
 
   - name: dim_customers
     description: "Tabela de dimensão de clientes, com uma linha por cliente único, resumindo seu comportamento de compra."
+    tests:
+      - not_null_proportion:
+          column_name: customer_unique_id
+          at_least: 0.99
+      - not_null_proportion:
+          column_name: lifetime_value
+          at_least: 0.95
     columns:
       - name: customer_unique_id
         description: "Chave primária. Identificador único do cliente."
+        tests:
+          - not_null
+          - unique
       - name: first_order_timestamp
         description: "Data e hora da primeira compra do cliente."
+        tests:
+          - not_null
+      - name: last_order_timestamp
+        description: "Data e hora da última compra do cliente."
+        tests:
+          - not_null
       - name: number_of_orders
         description: "Quantidade total de pedidos feitos pelo cliente."
       - name: lifetime_value
         description: "Soma total de todos os valores pagos pelo cliente em todos os seus pedidos."
-
-  - name: agg_seller_performance
-    description: "Tabela agregada com métricas de performance por vendedor."
-    columns:
-      - name: seller_id
-        description: "Chave primária. Identificador único do vendedor."
-      - name: total_orders
-        description: "Quantidade total de pedidos entregues que o vendedor teve."
-      - name: total_revenue
-        description: "Receita total gerada pelas vendas de produtos do vendedor (não inclui frete)."
-      - name: avg_review_score
-        description: "Nota média das avaliações recebidas pelo vendedor."
+      - name: last_city
+        description: "Cidade do último pedido do cliente."
+      - name: last_state
+        description: "Estado do último pedido do cliente."

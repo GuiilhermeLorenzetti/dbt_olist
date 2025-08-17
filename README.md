@@ -1,6 +1,10 @@
+# Projeto DBT Olist - Aprendizado de Data Build Tool
+
 ## 📋 Visão Geral
 
-Este projeto implementa uma solução de **Data Engineering** utilizando **dbt (data build tool)** para análise de dados do dataset **Brazilian E-commerce** da Olist. O projeto segue a arquitetura **Medallion Architecture** (Bronze → Silver → Gold) para transformar dados brutos em insights acionáveis.
+Este é um projeto focado no aprendizado e prática do **dbt (data build tool)**. O projeto utiliza o dataset **Brazilian E-commerce** da Olist como fonte de dados para demonstrar conceitos fundamentais do dbt, incluindo transformações, testes, documentação e boas práticas de engenharia de dados.
+
+**⚠️ Importante**: Este projeto tem fins exclusivamente educacionais. O foco está na ferramenta dbt e não na análise de dados. Alguns testes configurados podem falhar devido a problemas na fonte dos dados, mas isso é intencional para demonstrar como o dbt lida com dados de qualidade variável.
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -15,120 +19,90 @@ dbt_olist/
 │   │   ├── silver/                   # Camada Silver (dados limpos)
 │   │   ├── gold/                     # Camada Gold (dados de negócio)
 │   │   └── sources.yml               # Definição das fontes de dados
-│   ├── seeds/                        # Dados de referência
-│   ├── tests/                        # Testes de qualidade
+│   ├── seeds/                        # Dados de referência (CSV)
+│   ├── tests/                        # Testes de qualidade customizados
 │   ├── macros/                       # Macros reutilizáveis
 │   ├── snapshots/                    # Controle de mudanças
 │   └── dbt_project.yml               # Configuração do projeto
-├── logs/                             # Logs de execução
-└── .venv/                           # Ambiente virtual Python
+└── README.md                         # Documentação principal
 ```
 
-## 🔄 Fluxo de Dados (Data Pipeline)
+## 🔄 Fluxo de Dados
 
-### 1. **Ingestão (Bronze Layer)**
+### 1. **Camada Bronze (Seeds)**
 - **Fonte**: Dataset Brazilian E-commerce do Kaggle
-- **Script**: `data_raw/get_data_kaggle.py`
-- **Processo**: Download automático via Kaggle API
+- **Processo**: Download automático via `get_data_kaggle.py`
 - **Armazenamento**: Arquivos CSV na pasta `seeds/`
+- **Schema**: `bronze`
+- **9 tabelas**: customers, sellers, products, orders, order_items, order_payments, order_reviews, geolocation, product_category_translation
 
-### 2. **Transformação (Silver Layer)**
+### 2. **Camada Silver (Transformação)**
 - **Objetivo**: Limpeza, padronização e tipagem dos dados
-- **Modelos**: 9 tabelas silver com dados limpos
-- **Materialização**: Tables (persistentes)
+- **9 modelos**: Transformação 1:1 das tabelas bronze
+- **Materialização**: view
 - **Schema**: `silver`
+- **Transformações**: Cast de tipos, renomeação de colunas, padronização
 
-### 3. **Apresentação (Gold Layer)**
+### 3. **Camada Gold (Apresentação)**
 - **Objetivo**: Dados de negócio prontos para análise
-- **Modelos**: 3 tabelas gold com métricas agregadas
-- **Materialização**: Views (otimizadas para consulta)
+- **2 modelos**: `fct_order_details` e `dim_customers`
+- **Materialização**: Tables
 - **Schema**: `gold`
+- **Lógica**: Agregações, junções complexas, métricas de negócio
 
-## 📊 Modelos de Dados
+## 📊 Modelos Implementados
 
-### 🥉 Camada Bronze (Raw Data)
-**Dados brutos 1:1 com os arquivos CSV originais**
-
-A camada Bronze representa os dados exatamente como foram baixados do Kaggle, sem nenhuma transformação. Cada arquivo CSV é carregado diretamente no banco de dados mantendo sua estrutura original.
-
-**9 tabelas de dados brutos:**
-- `olist_customers_dataset` - Dados dos clientes
-- `olist_sellers_dataset` - Dados dos vendedores  
-- `olist_products_dataset` - Catálogo de produtos
-- `olist_orders_dataset` - Pedidos realizados
-- `olist_order_items_dataset` - Itens dos pedidos
-- `olist_order_payments_dataset` - Pagamentos
-- `olist_order_reviews_dataset` - Avaliações
-- `olist_geolocation_dataset` - Dados geográficos
-- `product_category_name_translation` - Tradução de categorias
-
-**Características:**
-- ✅ Dados originais preservados
-- ✅ Estrutura 1:1 com arquivos CSV
-- ✅ Sem transformações ou limpezas
-- ✅ Fonte única da verdade
-
-### 🥈 Camada Silver (Clean Data)
-**Dados limpos e padronizados 1:1 com Bronze**
-
-A camada Silver aplica transformações básicas de limpeza e padronização, mantendo a relação 1:1 com as tabelas Bronze, mas agora com dados mais confiáveis e tipados corretamente.
-
-**9 modelos de transformação:**
+### 🥈 Camada Silver
+**9 modelos de transformação básica:**
 
 | Modelo | Descrição | Principais Transformações |
 |--------|-----------|---------------------------|
-| `silver_customers` | Clientes limpos | Cast de tipos, validação de IDs |
-| `silver_sellers` | Vendedores limpos | Cast de tipos, validação de IDs |
-| `silver_products` | Produtos limpos | Cast de tipos, validação de dimensões |
-| `silver_orders` | Pedidos limpos | Cast de timestamps, validação de status |
-| `silver_order_items` | Itens limpos | Cast de valores monetários |
-| `silver_order_payments` | Pagamentos limpos | Agregação por tipo de pagamento |
-| `silver_order_reviews` | Avaliações limpas | Cast de timestamps, validação de scores |
-| `silver_geolocation` | Geolocalização limpa | Cast de coordenadas |
-| `silver_product_category_translation` | Traduções limpas | Validação de categorias |
+| `silver_customers` | Clientes | Cast de tipos para VARCHAR |
+| `silver_sellers` | Vendedores | Cast de tipos para VARCHAR |
+| `silver_products` | Produtos | Cast de tipos e correção de nomes |
+| `silver_orders` | Pedidos | Cast de tipos e renomeação |
+| `silver_order_items` | Itens | Cast de tipos para valores monetários |
+| `silver_order_payments` | Pagamentos | Cast de tipos para valores monetários |
+| `silver_order_reviews` | Avaliações | Cast de tipos e renomeação |
+| `silver_geolocation` | Geolocalização | Cast de tipos e renomeação |
+| `silver_product_category_translation` | Traduções  | Cast de tipos para VARCHAR |
 
-**Transformações Aplicadas:**
-- 🔄 Cast de tipos de dados (VARCHAR, TIMESTAMP, DECIMAL)
-- 🧹 Limpeza de valores nulos e inválidos
-- ✅ Validação de integridade referencial
-- 📝 Padronização de nomes de colunas
-- 🎯 Garantia de qualidade dos dados
+### 🥇 Camada Gold
+**2 modelos de negócio:**
 
-**3 modelos de negócio:**
-
-#### 1. `fct_order_details` - Tabela Fato Principal
+#### `fct_order_details`
 - **Propósito**: Visão consolidada de todos os pedidos
-- **Métricas**: Valor total, tempo de entrega, scores de avaliação
-- **Dimensões**: Cliente, produto, vendedor, localização
-- **Lógica**: Junção de todas as tabelas silver com agregação de pagamentos
+- **Métricas**: Valor total, scores de avaliação, pagamentos por tipo
+- **Lógica**: Junção de pedidos, pagamentos e avaliações
 
-#### 2. `dim_customers` - Dimensão de Clientes
+#### `dim_customers`
 - **Propósito**: Perfil consolidado por cliente único
-- **Métricas**: Lifetime value, número de pedidos, primeira compra
+- **Métricas**: Lifetime value, número de pedidos, primeira/última compra
 - **Lógica**: Agregação por `customer_unique_id`
-
-#### 3. `agg_seller_performance` - Performance de Vendedores
-- **Propósito**: Métricas de performance por vendedor
-- **Métricas**: Receita total, número de pedidos, score médio
-- **Filtro**: Apenas pedidos entregues (`delivered`)
-
-**Regras de Negócio Implementadas:**
-- 💰 Cálculo de receita total por pedido
-- ⏱️ Cálculo de tempo de entrega em dias
-- 📊 Agregação de métricas por cliente e vendedor
-- 🎯 Filtros específicos (apenas pedidos entregues)
-- 🔗 Junções complexas entre múltiplas tabelas
-- 📈 Criação de dimensões para análise dimensional
 
 ## 🧪 Qualidade de Dados
 
 ### Testes Implementados
-- **Not Null**: Validação de campos obrigatórios
-- **Unique**: Validação de chaves primárias
-- **Referential Integrity**: Validação de chaves estrangeiras
-- **Custom Tests**: Testes específicos de negócio
+- **Testes Básicos**: not_null, unique, accepted_values
+- **Testes Customizados**: 7 testes específicos para validação de dados
+- **Macros Customizados**: 3 macros para testes reutilizáveis
 
-### Documentação
-- **Schema Documentation**: Descrição detalhada de todas as tabelas e colunas
-- **Data Lineage**: Rastreabilidade completa das transformações
-- **Business Logic**: Documentação das regras de negócio aplicadas
+### Testes Customizados
+1. `test_order_delivery_dates.sql` - Validação de sequência cronológica
+2. `test_brazilian_states.sql` - Validação de UFs brasileiras
+3. `test_orphaned_records.sql` - Identificação de registros órfãos
+4. `test_gold_data_quality.sql` - Qualidade dos dados gold
+5. `test_gold_referential_integrity.sql` - Integridade referencial
+6. `test_product_quality.sql` - Qualidade dos dados de produtos
+
+### Macros Customizados
+- `test_positive_values.sql` - Validação de valores positivos
+- `test_string_length_equal.sql` - Validação de comprimento de strings
+- `test_not_null_proportion.sql` - Validação de proporção de valores não nulos
+
+
+## 📖 Recursos Adicionais
+
+- [Documentação oficial do dbt](https://docs.getdbt.com/)
+- [dbt Community](https://community.getdbt.com/)
+- [dbt Best Practices](https://docs.getdbt.com/guides/best-practices)
