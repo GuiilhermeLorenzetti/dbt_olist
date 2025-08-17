@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: fct_order_details
+    description: "Tabela fato principal, denormalizada, com todos os detalhes de cada item de pedido. A base para a maioria das análises de BI."
+    columns:
+      - name: order_id
+        description: "Identificador do pedido."
+      - name: customer_unique_id
+        description: "Identificador único do cliente."
+      - name: delivery_time_in_days
+        description: "Tempo em dias entre a compra e a entrega do pedido."
+      - name: total_payment_value
+        description: "Valor total pago pelo pedido, somando todos os métodos."
+
+  - name: dim_customers
+    description: "Tabela de dimensão de clientes, com uma linha por cliente único, resumindo seu comportamento de compra."
+    columns:
+      - name: customer_unique_id
+        description: "Chave primária. Identificador único do cliente."
+      - name: first_order_timestamp
+        description: "Data e hora da primeira compra do cliente."
+      - name: number_of_orders
+        description: "Quantidade total de pedidos feitos pelo cliente."
+      - name: lifetime_value
+        description: "Soma total de todos os valores pagos pelo cliente em todos os seus pedidos."
+
+  - name: agg_seller_performance
+    description: "Tabela agregada com métricas de performance por vendedor."
+    columns:
+      - name: seller_id
+        description: "Chave primária. Identificador único do vendedor."
+      - name: total_orders
+        description: "Quantidade total de pedidos entregues que o vendedor teve."
+      - name: total_revenue
+        description: "Receita total gerada pelas vendas de produtos do vendedor (não inclui frete)."
+      - name: avg_review_score
+        description: "Nota média das avaliações recebidas pelo vendedor."
