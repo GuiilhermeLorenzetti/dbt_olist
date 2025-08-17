@@ -37,7 +37,7 @@ dbt_olist/
 - **9 tabelas**: customers, sellers, products, orders, order_items, order_payments, order_reviews, geolocation, product_category_translation
 
 ### 2. **Camada Silver (Transformação)**
-- **Objetivo**: Limpeza, padronização e tipagem dos dados
+- **Objetivo**:  Padronização e tipagem dos dados
 - **9 modelos**: Transformação 1:1 das tabelas bronze
 - **Materialização**: view
 - **Schema**: `silver`
