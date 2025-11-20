@@ -36,10 +36,12 @@ dbt_olist/
 - **Schema**: `bronze`
 - **9 tables**: customers, sellers, products, orders, order_items, order_payments, order_reviews, geolocation, product_category_translation
 
+
 ### 2. **Silver Layer (Transformation)**
 - **Objective**: Data cleaning, standardization, and typing
 - **9 models**: 1:1 transformation of bronze tables
 - **Materialization**: view
+
 - **Schema**: `silver`
 - **Transformations**: Type casting, column renaming, standardization
 
