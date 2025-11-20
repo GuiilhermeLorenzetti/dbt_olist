@@ -1,7 +1,7 @@
--- Teste para validar que as datas de entrega seguem uma sequência lógica
--- approved_at deve ser posterior a purchase_timestamp
--- delivered_to_carrier_at deve ser posterior a approved_at
--- delivered_to_customer_at deve ser posterior a delivered_to_carrier_at
+-- Test to validate that delivery dates follow a logical sequence
+-- approved_at must be after purchase_timestamp
+-- delivered_to_carrier_at must be after approved_at
+-- delivered_to_customer_at must be after delivered_to_carrier_at
 
 SELECT 
     order_id,

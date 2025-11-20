@@ -1,58 +1,58 @@
-# Macros Customizados - Projeto DBT Olist
+# Custom Macros - Olist dbt Project
 
-Este diretório contém macros customizados reutilizáveis para testes e transformações específicas do projeto.
+This directory contains reusable custom macros for specific project tests and transformations.
 
-## 📋 Visão Geral
+## 📋 Overview
 
-Os macros customizados demonstram como criar código SQL reutilizável no dbt, permitindo:
-- **Reutilização** de lógica comum
-- **Padronização** de testes
-- **Manutenibilidade** do código
-- **Flexibilidade** para casos específicos
+Custom macros demonstrate how to create reusable SQL code in dbt, allowing:
+- **Reuse** of common logic
+- **Standardization** of tests
+- **Maintainability** of code
+- **Flexibility** for specific cases
 
-## 🔧 Macros Implementados
+## 🔧 Implemented Macros
 
 ### 1. `test_positive_values.sql`
 
-**Propósito**: Valida que valores numéricos são positivos
+**Purpose**: Validates that numeric values are positive
 
-**Parâmetros**:
-- `model`: Modelo a ser testado
-- `column_name`: Nome da coluna a ser validada
+**Parameters**:
+- `model`: Model to be tested
+- `column_name`: Name of the column to be validated
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_positive_values(model, column_name) }}
 ```
 
-**Exemplo**:
+**Example**:
 ```yaml
-# Em schema.yml
+# In schema.yml
 columns:
   - name: price
     tests:
       - test_positive_values
 ```
 
-**Aplicação**: Preços, fretes, pagamentos, dimensões de produtos
+**Application**: Prices, freights, payments, product dimensions
 
 ### 2. `test_string_length_equal.sql`
 
-**Propósito**: Valida que strings têm comprimento específico
+**Purpose**: Validates that strings have specific length
 
-**Parâmetros**:
-- `model`: Modelo a ser testado
-- `column_name`: Nome da coluna a ser validada
-- `expected_length`: Comprimento esperado
+**Parameters**:
+- `model`: Model to be tested
+- `column_name`: Name of the column to be validated
+- `expected_length`: Expected length
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_string_length_equal(model, column_name, expected_length) }}
 ```
 
-**Exemplo**:
+**Example**:
 ```yaml
-# Em schema.yml
+# In schema.yml
 columns:
   - name: customer_zip_code_prefix
     tests:
@@ -60,25 +60,25 @@ columns:
           expected_length: 5
 ```
 
-**Aplicação**: CEPs (5 dígitos), estados (2 caracteres)
+**Application**: Zip codes (5 digits), states (2 characters)
 
 ### 3. `test_not_null_proportion.sql`
 
-**Propósito**: Valida que uma proporção mínima de valores não é nula
+**Purpose**: Validates that a minimum proportion of values is not null
 
-**Parâmetros**:
-- `model`: Modelo a ser testado
-- `column_name`: Nome da coluna a ser validada
-- `min_proportion`: Proporção mínima (0.0 a 1.0)
+**Parameters**:
+- `model`: Model to be tested
+- `column_name`: Name of the column to be validated
+- `min_proportion`: Minimum proportion (0.0 to 1.0)
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_not_null_proportion(model, column_name, min_proportion) }}
 ```
 
-**Exemplo**:
+**Example**:
 ```yaml
-# Em schema.yml
+# In schema.yml
 columns:
   - name: product_description
     tests:

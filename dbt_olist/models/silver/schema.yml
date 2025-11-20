@@ -2,254 +2,254 @@ version: 2
 
 models:
   - name: silver_orders
-    description: "Tabela central de pedidos. Cada linha representa um único pedido feito na plataforma Olist."
+    description: "Central orders table. Each row represents a single order made on the Olist platform."
     columns:
       - name: order_id
-        description: "Identificador único do pedido. Chave primária da tabela."
+        description: "Unique order identifier. Table primary key."
         tests:
           - unique
           - not_null
       - name: customer_id
-        description: "Identificador da sessão de compra do cliente. Chave estrangeira para a tabela silver_customers."
+        description: "Customer purchase session identifier. Foreign key to silver_customers table."
         tests:
           - not_null
       - name: order_status
-        description: "Status atual do pedido (ex: delivered, shipped, canceled)."
+        description: "Current order status (e.g., delivered, shipped, canceled)."
         tests:
           - not_null
           - accepted_values:
               values: ['delivered', 'shipped', 'canceled', 'processing', 'approved', 'invoiced', 'unavailable', 'created']
       - name: purchase_timestamp
-        description: "Data e hora em que a compra foi efetuada pelo cliente."
+        description: "Date and time when the purchase was made by the customer."
         tests:
           - not_null
       - name: approved_at
-        description: "Data e hora em que o pagamento do pedido foi aprovado."
+        description: "Date and time when the order payment was approved."
       - name: delivered_to_carrier_at
-        description: "Data e hora em que o pedido foi postado e entregue à transportadora."
+        description: "Date and time when the order was posted and delivered to the carrier."
       - name: delivered_to_customer_at
-        description: "Data e hora em que o pedido foi efetivamente entregue ao cliente."
+        description: "Date and time when the order was effectively delivered to the customer."
       - name: estimated_delivery_at
-        description: "Data estimada de entrega informada ao cliente no momento da compra."
+        description: "Estimated delivery date informed to the customer at the time of purchase."
         tests:
           - not_null
 
   - name: silver_order_items
-    description: "Tabela de itens de pedido. Cada linha representa um produto específico dentro de um pedido. Um pedido pode ter múltiplos itens."
+    description: "Order items table. Each row represents a specific product within an order. An order can have multiple items."
     columns:
       - name: order_id
-        description: "Identificador do pedido ao qual o item pertence."
+        description: "Identifier of the order to which the item belongs."
         tests:
           - not_null
       - name: order_item_id
-        description: "Número sequencial que identifica os itens dentro de um mesmo pedido."
+        description: "Sequential number identifying items within the same order."
         tests:
           - not_null
       - name: product_id
-        description: "Identificador do produto vendido."
+        description: "Identifier of the sold product."
         tests:
           - not_null
       - name: seller_id
-        description: "Identificador do vendedor que comercializou o produto."
+        description: "Identifier of the seller who sold the product."
         tests:
           - not_null
       - name: shipping_limit_at
-        description: "Data e hora limite para o vendedor enviar o produto."
+        description: "Deadline date and time for the seller to ship the product."
         tests:
           - not_null
       - name: price
-        description: "Preço do produto (valor unitário)."
+        description: "Product price (unit value)."
         tests:
           - not_null
           - positive_values
       - name: freight_value
-        description: "Custo do frete para o item."
+        description: "Freight cost for the item."
         tests:
           - not_null
 
   - name: silver_order_payments
-    description: "Registros de pagamento dos pedidos. Um único pedido pode ter múltiplas linhas de pagamento (ex: parte no cartão, parte no voucher)."
+    description: "Order payment records. A single order can have multiple payment rows (e.g., part on card, part on voucher)."
     columns:
       - name: order_id
-        description: "Identificador do pedido relacionado ao pagamento."
+        description: "Identifier of the order related to the payment."
         tests:
           - not_null
       - name: payment_sequential
-        description: "Sequência de pagamentos para um mesmo pedido, caso haja mais de um."
+        description: "Payment sequence for the same order, if there is more than one."
         tests:
           - not_null
           - positive_values
       - name: payment_type
-        description: "Método de pagamento utilizado (ex: credit_card, boleto, voucher)."
+        description: "Payment method used (e.g., credit_card, boleto, voucher)."
         tests:
           - not_null
           - accepted_values:
               values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
       - name: payment_installments
-        description: "Número de parcelas escolhido para o pagamento."
+        description: "Number of installments chosen for the payment."
         tests:
           - not_null
           - positive_values
       - name: payment_value
-        description: "Valor total deste registro de pagamento."
+        description: "Total value of this payment record."
         tests:
           - not_null
           - positive_values
 
   - name: silver_order_reviews
-    description: "Avaliações (reviews) feitas pelos clientes sobre seus pedidos após a entrega."
+    description: "Reviews made by customers about their orders after delivery."
     columns:
       - name: review_id
-        description: "Identificador único da avaliação."
+        description: "Unique review identifier."
       - name: order_id
-        description: "Identificador do pedido que foi avaliado."
+        description: "Identifier of the order that was reviewed."
         tests:
           - not_null
       - name: review_score
-        description: "Nota da avaliação atribuída pelo cliente (de 1 a 5)."
+        description: "Review score assigned by the customer (from 1 to 5)."
         tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
       - name: review_comment_title
-        description: "Título do comentário da avaliação (opcional)."
+        description: "Review comment title (optional)."
       - name: review_comment_message
-        description: "Mensagem do comentário da avaliação (opcional)."
+        description: "Review comment message (optional)."
       - name: review_creation_timestamp
-        description: "Data e hora em que o formulário de avaliação foi enviado pelo cliente."
+        description: "Date and time when the review form was sent by the customer."
         tests:
           - not_null
       - name: review_answer_timestamp
-        description: "Data e hora em que a avaliação foi respondida (pelo vendedor ou Olist)."
+        description: "Date and time when the review was answered (by the seller or Olist)."
 
   - name: silver_products
-    description: "Tabela de catálogo com as informações de cada produto vendido na Olist."
+    description: "Catalog table with information on each product sold on Olist."
     columns:
       - name: product_id
-        description: "Identificador único do produto."
+        description: "Unique product identifier."
         tests:
           - unique
           - not_null
       - name: product_category_name
-        description: "Nome da categoria do produto em português."
+        description: "Product category name in Portuguese."
       - name: product_name_length
-        description: "Número de caracteres no nome do produto."
+        description: "Number of characters in the product name."
       - name: product_description_length
-        description: "Número de caracteres na descrição do produto."
+        description: "Number of characters in the product description."
       - name: product_photos_qty
-        description: "Quantidade de fotos publicadas do produto."
+        description: "Quantity of published product photos."
       - name: product_weight_g
-        description: "Peso do produto em gramas."
+        description: "Product weight in grams."
         tests:
           - not_null
           - positive_values
       - name: product_length_cm
-        description: "Comprimento do produto em centímetros."
+        description: "Product length in centimeters."
         tests:
           - not_null
           - positive_values
       - name: product_height_cm
-        description: "Altura do produto em centímetros."
+        description: "Product height in centimeters."
         tests:
           - not_null
           - positive_values
       - name: product_width_cm
-        description: "Largura do produto em centímetros."
+        description: "Product width in centimeters."
         tests:
           - not_null
           - positive_values
 
   - name: silver_customers
-    description: "Dados dos clientes. Cada linha é gerada a cada nova compra, portanto um cliente pode aparecer mais de uma vez."
+    description: "Customer data. Each row is generated for each new purchase, so a customer can appear more than once."
     columns:
       - name: customer_id
-        description: "Identificador da sessão de compra do cliente. Chave primária."
+        description: "Customer purchase session identifier. Primary key."
         tests:
           - unique
           - not_null
       - name: customer_unique_id
-        description: "Identificador único de um cliente. Usado para agrupar todas as compras de uma mesma pessoa."
+        description: "Unique identifier of a customer. Used to group all purchases by the same person."
         tests:
           - not_null
       - name: customer_zip_code_prefix
-        description: "Os 5 primeiros dígitos do CEP do cliente."
+        description: "First 5 digits of the customer's zip code."
         tests:
           - not_null
           - string_length_equal:
               length: 5
       - name: customer_city
-        description: "Cidade do cliente."
+        description: "Customer city."
         tests:
           - not_null
       - name: customer_state
-        description: "Estado (UF) do cliente."
+        description: "Customer state (UF)."
         tests:
           - not_null
           - string_length_equal:
               length: 2
 
   - name: silver_sellers
-    description: "Informações sobre os vendedores (sellers) que utilizam a plataforma Olist."
+    description: "Information about sellers who use the Olist platform."
     columns:
       - name: seller_id
-        description: "Identificador único do vendedor."
+        description: "Unique seller identifier."
         tests:
           - unique
           - not_null
       - name: seller_zip_code_prefix
-        description: "Os 5 primeiros dígitos do CEP do vendedor."
+        description: "First 5 digits of the seller's zip code."
         tests:
           - not_null
           - string_length_equal:
               length: 5
       - name: seller_city
-        description: "Cidade do vendedor."
+        description: "Seller city."
         tests:
           - not_null
       - name: seller_state
-        description: "Estado (UF) do vendedor."
+        description: "Seller state (UF)."
         tests:
           - not_null
           - string_length_equal:
               length: 2
 
   - name: silver_geolocation
-    description: "Dados de geolocalização contendo latitude e longitude para CEPs do Brasil."
+    description: "Geolocation data containing latitude and longitude for Brazilian zip codes."
     columns:
       - name: zip_code_prefix
-        description: "Os 5 primeiros dígitos do CEP."
+        description: "First 5 digits of the zip code."
         tests:
           - not_null
           - string_length_equal:
               length: 5
       - name: latitude
-        description: "Coordenada de latitude."
+        description: "Latitude coordinate."
         tests:
           - not_null
       - name: longitude
-        description: "Coordenada de longitude."
+        description: "Longitude coordinate."
         tests:
           - not_null
       - name: city
-        description: "Nome da cidade (com variações de acentuação)."
+        description: "City name (with accent variations)."
         tests:
           - not_null
       - name: state
-        description: "Sigla do estado (UF)."
+        description: "State acronym (UF)."
         tests:
           - not_null
           - string_length_equal:
               length: 2
 
   - name: silver_product_category_translation
-    description: "Tabela de tradução (de-para) das categorias de produtos do português para o inglês."
+    description: "Translation table (from-to) of product categories from Portuguese to English."
     columns:
       - name: product_category_name
-        description: "Nome da categoria em português."
+        description: "Category name in Portuguese."
         tests:
           - unique
           - not_null
       - name: product_category_name_english
-        description: "Nome da categoria em inglês."
+        description: "Category name in English."
         tests:
           - not_null

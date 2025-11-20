@@ -1,6 +1,6 @@
 -- models/marts/fct_orders.sql
 
--- 1. Agrega e pivota os dados de pagamento por pedido
+-- 1. Aggregates and pivots payment data by order
 WITH payments_pivoted AS (
 
     SELECT
@@ -16,7 +16,7 @@ WITH payments_pivoted AS (
 
 ),
 
--- 2. Calcula a média de avaliação (review score) por pedido
+-- 2. Calculates average review score by order
 order_reviews AS (
 
     SELECT
@@ -28,26 +28,26 @@ order_reviews AS (
 
 ),
 
--- 3. Junta os dados de pagamentos e avaliações aos pedidos
+-- 3. Joins payment and review data to orders
 final AS (
 
     SELECT 
-        -- Chaves e IDs
+        -- Keys and IDs
         ord.order_id,
         ord.customer_id,
 
-        -- Timestamps e Datas
+        -- Timestamps and Dates
         ord.purchase_timestamp,
         ord.approved_at,
         ord.delivered_to_carrier_at,
         ord.delivered_to_customer_at,
         ord.estimated_delivery_at,
 
-        -- Atributos do Pedido
+        -- Order Attributes
         ord.order_status,
         rev.average_review_score,
 
-        -- Métricas de Pagamento
+        -- Payment Metrics
         pay.total_payment_value,
         pay.credit_card_payment_value,
         pay.boleto_payment_value,

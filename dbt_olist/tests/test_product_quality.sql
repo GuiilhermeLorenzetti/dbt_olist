@@ -1,7 +1,7 @@
--- Teste para validar a qualidade dos dados de produtos
--- Verifica se os produtos têm informações mínimas necessárias
+-- Test to validate product data quality
+-- Checks if products have minimum necessary information
 
--- Produtos com nome muito curto (menos de 3 caracteres)
+-- Products with very short name (less than 3 characters)
 SELECT 
     'product_name_too_short' as issue_type,
     product_id,
@@ -12,7 +12,7 @@ WHERE product_name_length < 3
 
 UNION ALL
 
--- Produtos com descrição muito curta (menos de 5 caracteres)
+-- Products with very short description (less than 5 characters)
 SELECT 
     'product_description_too_short' as issue_type,
     product_id,
@@ -23,7 +23,7 @@ WHERE product_description_length < 5
 
 UNION ALL
 
--- Produtos com dimensões zero (impossível)
+-- Products with zero dimensions (impossible)
 SELECT 
     'product_zero_dimensions' as issue_type,
     product_id,

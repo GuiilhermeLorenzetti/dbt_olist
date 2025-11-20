@@ -1,12 +1,12 @@
--- Testes de qualidade de dados para a camada Gold
--- Validações específicas para os modelos gold
+-- Data quality tests for the Gold layer
+-- Specific validations for gold models
 
--- 1. Teste para dim_customers - Validações de integridade
+-- 1. Test for dim_customers - Integrity validations
 SELECT 
     'dim_customers_invalid_lifetime_value' as test_name,
     customer_unique_id,
     lifetime_value,
-    'Lifetime value deve ser maior ou igual a zero' as issue_description
+    'Lifetime value must be greater than or equal to zero' as issue_description
 FROM {{ ref('dim_customers') }}
 WHERE lifetime_value < 0
 
@@ -16,7 +16,7 @@ SELECT
     'dim_customers_invalid_order_count' as test_name,
     customer_unique_id,
     number_of_orders,
-    'Número de pedidos deve ser maior que zero' as issue_description
+    'Number of orders must be greater than zero' as issue_description
 FROM {{ ref('dim_customers') }}
 WHERE number_of_orders <= 0
 
@@ -26,18 +26,18 @@ SELECT
     'dim_customers_invalid_dates' as test_name,
     customer_unique_id,
     first_order_timestamp,
-    'Primeira ordem deve ser anterior ou igual à última ordem' as issue_description
+    'First order must be before or equal to the last order' as issue_description
 FROM {{ ref('dim_customers') }}
 WHERE first_order_timestamp > last_order_timestamp
 
 UNION ALL
 
--- 2. Teste para fct_order_details - Validações de integridade
+-- 2. Test for fct_order_details - Integrity validations
 SELECT 
     'fct_order_details_invalid_payment_values' as test_name,
     order_id,
     total_payment_value,
-    'Valor total de pagamento deve ser maior que zero' as issue_description
+    'Total payment value must be greater than zero' as issue_description
 FROM {{ ref('fct_order_details') }}
 WHERE total_payment_value <= 0
 
@@ -47,7 +47,7 @@ SELECT
     'fct_order_details_payment_sum_mismatch' as test_name,
     order_id,
     total_payment_value,
-    'Soma dos métodos de pagamento deve igualar o total' as issue_description
+    'Sum of payment methods must equal the total' as issue_description
 FROM {{ ref('fct_order_details') }}
 WHERE ABS(total_payment_value - (credit_card_payment_value + boleto_payment_value + voucher_payment_value + others_payment_value)) > 0.01
 
@@ -57,19 +57,19 @@ SELECT
     'fct_order_details_invalid_review_score' as test_name,
     order_id,
     average_review_score,
-    'Score de avaliação deve estar entre 1 e 5' as issue_description
+    'Review score must be between 1 and 5' as issue_description
 FROM {{ ref('fct_order_details') }}
 WHERE average_review_score IS NOT NULL 
   AND (average_review_score < 1 OR average_review_score > 5)
 
 UNION ALL
 
--- 3. Teste para validar sequência temporal dos pedidos
+-- 3. Test to validate chronological sequence of orders
 SELECT 
     'fct_order_details_invalid_date_sequence' as test_name,
     order_id,
     purchase_timestamp,
-    'Datas devem seguir sequência lógica: purchase -> approved -> delivered' as issue_description
+    'Dates must follow logical sequence: purchase -> approved -> delivered' as issue_description
 FROM {{ ref('fct_order_details') }}
 WHERE 
     (approved_at IS NOT NULL AND approved_at < purchase_timestamp)
@@ -78,12 +78,12 @@ WHERE
 
 UNION ALL
 
--- 4. Teste para validar consistência entre dim_customers e fct_order_details
+-- 4. Test to validate consistency between dim_customers and fct_order_details
 SELECT 
     'customer_order_consistency_mismatch' as test_name,
     dc.customer_unique_id,
     dc.lifetime_value,
-    'Valor total do cliente deve ser igual à soma dos pedidos' as issue_description
+    'Total customer value must be equal to the sum of orders' as issue_description
 FROM {{ ref('dim_customers') }} dc
 LEFT JOIN (
     SELECT 

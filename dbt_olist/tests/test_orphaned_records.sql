@@ -1,7 +1,7 @@
--- Teste para identificar registros órfãos
--- Verifica se existem referências para registros que não existem nas tabelas pai
+-- Test to identify orphaned records
+-- Checks if there are references to records that do not exist in parent tables
 
--- Orphaned order_items (sem order correspondente)
+-- Orphaned order_items (without corresponding order)
 SELECT 
     'order_items_without_order' as issue_type,
     oi.order_id,
@@ -12,7 +12,7 @@ WHERE o.order_id IS NULL
 
 UNION ALL
 
--- Orphaned order_items (sem product correspondente)
+-- Orphaned order_items (without corresponding product)
 SELECT 
     'order_items_without_product' as issue_type,
     oi.product_id,
@@ -23,7 +23,7 @@ WHERE p.product_id IS NULL
 
 UNION ALL
 
--- Orphaned order_items (sem seller correspondente)
+-- Orphaned order_items (without corresponding seller)
 SELECT 
     'order_items_without_seller' as issue_type,
     oi.seller_id,
@@ -34,7 +34,7 @@ WHERE s.seller_id IS NULL
 
 UNION ALL
 
--- Orphaned order_payments (sem order correspondente)
+-- Orphaned order_payments (without corresponding order)
 SELECT 
     'order_payments_without_order' as issue_type,
     op.order_id,
@@ -45,7 +45,7 @@ WHERE o.order_id IS NULL
 
 UNION ALL
 
--- Orphaned order_reviews (sem order correspondente)
+-- Orphaned order_reviews (without corresponding order)
 SELECT 
     'order_reviews_without_order' as issue_type,
     ore.order_id,
@@ -56,7 +56,7 @@ WHERE o.order_id IS NULL
 
 UNION ALL
 
--- Orphaned orders (sem customer correspondente)
+-- Orphaned orders (without corresponding customer)
 SELECT 
     'orders_without_customer' as issue_type,
     o.customer_id,

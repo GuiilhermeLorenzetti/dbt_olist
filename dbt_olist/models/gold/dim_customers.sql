@@ -32,21 +32,21 @@ ranked_customer_orders AS (
 final AS (
 
     SELECT
-        -- Dados agregados do cliente
+        -- Aggregated customer data
         co.customer_unique_id,
         MIN(co.purchase_timestamp) AS first_order_timestamp,
         MAX(co.purchase_timestamp) AS last_order_timestamp,
         COUNT(DISTINCT co.order_id) AS number_of_orders,
         SUM(co.total_payment_value) AS lifetime_value,
         
-        -- Dados do último pedido (obtidos com o JOIN)
+        -- Last order data (obtained with JOIN)
         rco.customer_city AS last_city,
         rco.customer_state AS last_state
         
     FROM customer_orders AS co
     LEFT JOIN ranked_customer_orders AS rco 
         ON co.customer_unique_id = rco.customer_unique_id
-        AND rco.order_rank = 1 -- Filtra para trazer APENAS a linha do último pedido
+        AND rco.order_rank = 1 -- Filter to bring ONLY the last order row
 
     GROUP BY 
         co.customer_unique_id,

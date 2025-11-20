@@ -1,134 +1,134 @@
-# Testes de Qualidade de Dados - Projeto DBT Olist
+# Data Quality Tests - Olist dbt Project
 
-Este diretório contém todos os testes customizados para validar a qualidade dos dados no projeto dbt Olist. Os testes demonstram como o dbt pode ser usado para garantir a qualidade e integridade dos dados em diferentes camadas.
+This directory contains all custom tests to validate data quality in the Olist dbt project. The tests demonstrate how dbt can be used to ensure data quality and integrity across different layers.
 
-**⚠️ Importante**: Este projeto tem fins didáticos. Alguns testes podem falhar devido a problemas na fonte dos dados, demonstrando como o dbt lida com dados de qualidade variável.
+**⚠️ Important**: This project is for educational purposes. Some tests may fail due to issues in the data source, demonstrating how dbt handles data of varying quality.
 
-## 📋 Visão Geral dos Testes
+## 📋 Tests Overview
 
-### Testes Básicos (Schema.yml)
-Testes padrão do dbt aplicados nas definições de schema:
+### Basic Tests (Schema.yml)
+Standard dbt tests applied in schema definitions:
 
-- **not_null**: Validação de campos obrigatórios
-- **unique**: Validação de chaves primárias
-- **accepted_values**: Validação de valores permitidos
+- **not_null**: Mandatory fields validation
+- **unique**: Primary keys validation
+- **accepted_values**: Allowed values validation
 
-### Testes Customizados (SQL)
-Testes específicos escritos em SQL para validações mais complexas:
+### Custom Tests (SQL)
+Specific tests written in SQL for more complex validations:
 
-- **Validação de Datas**: Sequência cronológica de eventos
-- **Validação Geográfica**: Estados brasileiros válidos
-- **Validação de Integridade**: Registros órfãos e referências quebradas
-- **Validação de Qualidade**: Dados de produtos e métricas de negócio
+- **Date Validation**: Chronological sequence of events
+- **Geographic Validation**: Valid Brazilian states
+- **Integrity Validation**: Orphaned records and broken references
+- **Quality Validation**: Product data and business metrics
 
-### Macros Customizados
-Funções reutilizáveis para testes específicos:
+### Custom Macros
+Reusable functions for specific tests:
 
-- **test_positive_values**: Validação de valores positivos
-- **test_string_length_equal**: Validação de comprimento de strings
-- **test_not_null_proportion**: Validação de proporção de valores não nulos
+- **test_positive_values**: Positive values validation
+- **test_string_length_equal**: String length validation
+- **test_not_null_proportion**: Non-null values proportion validation
 
-## 🧪 Testes Customizados Implementados
+## 🧪 Implemented Custom Tests
 
 ### 1. `test_order_delivery_dates.sql`
-**Propósito**: Valida a sequência cronológica das datas de entrega
+**Purpose**: Validates chronological sequence of delivery dates
 
-**Validações**:
-- `approved_at` deve ser posterior a `purchase_timestamp`
-- `delivered_to_carrier_at` deve ser posterior a `approved_at`
-- `delivered_to_customer_at` deve ser posterior a `delivered_to_carrier_at`
+**Validations**:
+- `approved_at` must be after `purchase_timestamp`
+- `delivered_to_carrier_at` must be after `approved_at`
+- `delivered_to_customer_at` must be after `delivered_to_carrier_at`
 
-**Aplicação**: Camada Silver - `silver_orders`
+**Application**: Silver Layer - `silver_orders`
 
 ### 2. `test_brazilian_states.sql`
-**Propósito**: Valida que os estados são UFs brasileiras válidas
+**Purpose**: Validates that states are valid Brazilian UFs
 
-**Validações**:
-- Estados devem estar na lista oficial de UFs brasileiras
-- Aplicado em todas as tabelas com dados de localização
+**Validations**:
+- States must be in the official list of Brazilian UFs
+- Applied in all tables with location data
 
-**Aplicação**: Camadas Silver e Gold
+**Application**: Silver and Gold Layers
 
 ### 3. `test_orphaned_records.sql`
-**Propósito**: Identifica registros órfãos (referências quebradas)
+**Purpose**: Identifies orphaned records (broken references)
 
 
-**Aplicação**: Camada Silver
+**Application**: Silver Layer
 
 ### 4. `test_gold_data_quality.sql`
-**Propósito**: Valida a qualidade dos dados na camada Gold
+**Purpose**: Validates data quality in the Gold layer
 
-**Validações**:
-- Valores monetários positivos
-- Scores de avaliação entre 1 e 5
-- Integridade de chaves primárias
+**Validations**:
+- Positive monetary values
+- Review scores between 1 and 5
+- Primary key integrity
 
-**Aplicação**: Camada Gold
+**Application**: Gold Layer
 
 ### 5. `test_gold_referential_integrity.sql`
-**Propósito**: Valida a integridade referencial entre modelos Gold
+**Purpose**: Validates referential integrity between Gold models
 
-**Validações**:
-- Relacionamentos entre `fct_order_details` e `dim_customers`
-- Consistência de chaves estrangeiras
-- Dados agregados coerentes
+**Validations**:
+- Relationships between `fct_order_details` and `dim_customers`
+- Foreign key consistency
+- Consistent aggregated data
 
-**Aplicação**: Camada Gold
+**Application**: Gold Layer
 
 ### 6. `test_product_quality.sql`
-**Propósito**: Valida a qualidade dos dados de produtos
+**Purpose**: Validates product data quality
 
-**Validações**:
-- Nomes com pelo menos 3 caracteres
-- Descrições com pelo menos 10 caracteres
-- Produtos com pelo menos 1 foto
-- Dimensões não zero
+**Validations**:
+- Names with at least 3 characters
+- Descriptions with at least 10 characters
+- Products with at least 1 photo
+- Non-zero dimensions
 
-**Aplicação**: Camada Silver - `silver_products`
+**Application**: Silver Layer - `silver_products`
 
-## 🔧 Macros Customizados
+## 🔧 Custom Macros
 
 ### `test_positive_values.sql`
-**Propósito**: Valida que valores numéricos são positivos
+**Purpose**: Validates that numeric values are positive
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_positive_values(model, column_name) }}
 ```
 
-**Aplicação**: Preços, fretes, pagamentos, dimensões de produtos
+**Application**: Prices, freights, payments, product dimensions
 
 ### `test_string_length_equal.sql`
-**Propósito**: Valida que strings têm comprimento específico
+**Purpose**: Validates that strings have specific length
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_string_length_equal(model, column_name, expected_length) }}
 ```
 
-**Aplicação**: CEPs (5 dígitos), estados (2 caracteres)
+**Application**: Zip codes (5 digits), states (2 characters)
 
 ### `test_not_null_proportion.sql`
-**Propósito**: Valida que uma proporção mínima de valores não é nula
+**Purpose**: Validates that a minimum proportion of values is not null
 
-**Uso**:
+**Usage**:
 ```sql
 {{ test_not_null_proportion(model, column_name, min_proportion) }}
 ```
 
-**Aplicação**: Campos opcionais que devem ter preenchimento mínimo
+**Application**: Optional fields that must have minimum population
 
-## 📊 Cobertura de Testes
+## 📊 Test Coverage
 
-### Camada Bronze (Seeds)
-- **not_null**: Campos obrigatórios
-- **unique**: Chaves primárias
+### Bronze Layer (Seeds)
+- **not_null**: Mandatory fields
+- **unique**: Primary keys
 
-### Camada Silver
-- **Testes Básicos**: not_null, unique, relationships, accepted_values
-- **Testes Customizados**: 4 testes específicos
-- **Macros**: Validação de valores positivos e comprimento de strings
+### Silver Layer
+- **Basic Tests**: not_null, unique, relationships, accepted_values
+- **Custom Tests**: 4 specific tests
+- **Macros**: Positive values and string length validation
 
-### Camada Gold
-- **Testes Customizados**: 2 testes específicos
-- **Validações**: Qualidade de dados e integridade referencial
+### Gold Layer
+- **Custom Tests**: 2 specific tests
+- **Validations**: Data quality and referential integrity

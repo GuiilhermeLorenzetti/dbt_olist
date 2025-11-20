@@ -1,5 +1,5 @@
--- Teste para validar que os estados são válidos para o Brasil
--- Lista de todas as UFs brasileiras
+-- Test to validate that states are valid for Brazil
+-- List of all Brazilian UFs
 
 SELECT 
     customer_id,

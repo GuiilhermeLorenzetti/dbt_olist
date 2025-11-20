@@ -5,34 +5,34 @@ from pathlib import Path
 
 def download_kaggle_data():
     """
-    Download dados do dataset Brazilian E-commerce do Kaggle
-    e salva na pasta data_raw/csv
+    Download Brazilian E-commerce dataset from Kaggle
+    and save to data_raw/csv folder
     """
     
-    # Cria a pasta csv se não existir
+    # Create csv folder if it doesn't exist
     csv_folder = Path("dbt_olist/seeds")
     csv_folder.mkdir(parents=True, exist_ok=True)
     
-    print("Baixando dados do Kaggle...")
+    print("Downloading data from Kaggle...")
     
-    # Download do dataset
+    # Dataset download
     path = kagglehub.dataset_download("olistbr/brazilian-ecommerce")
     
-    print(f"Dataset baixado em: {path}")
+    print(f"Dataset downloaded at: {path}")
     
-    # Lista todos os arquivos baixados
+    # List all downloaded files
     downloaded_files = list(Path(path).glob("*"))
     
-    print(f"Arquivos encontrados: {len(downloaded_files)}")
+    print(f"Files found: {len(downloaded_files)}")
     
-    # Move os arquivos para a pasta csv
+    # Move files to csv folder
     for file_path in downloaded_files:
         if file_path.is_file():
             destination = csv_folder / file_path.name
             shutil.copy2(file_path, destination)
-            print(f"Arquivo copiado: {file_path.name}")
+            print(f"File copied: {file_path.name}")
     
-    print(f"\nTodos os arquivos foram salvos em: {csv_folder.absolute()}")
+    print(f"\nAll files were saved in: {csv_folder.absolute()}")
 
 if __name__ == "__main__":
     download_kaggle_data()
