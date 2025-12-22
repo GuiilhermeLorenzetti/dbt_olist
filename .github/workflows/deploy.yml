@@ -1,0 +1,40 @@
+name: deploy_dbt
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-postgres
+
+      - name: Run dbt
+        working-directory: ./dbt_olist/dbt_olist
+        env:
+          DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
+          HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
+          PASSWORD_DBT_OLIST: ${{ secrets.PASSWORD_DBT_OLIST }}
+          PORT_DBT_OLIST: ${{ secrets.PORT_DBT_OLIST }}
+          USER_DBT_OLIST: ${{ secrets.USER_DBT_OLIST }}
+        run: |
+          dbt deps
+          dbt debug --profiles-dir . --target prod
+          dbt run --profiles-dir . --target prod
+          dbt test --profiles-dir . --target prod
