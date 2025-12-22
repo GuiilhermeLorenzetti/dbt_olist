@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -26,7 +23,7 @@ jobs:
           pip install dbt-postgres
 
       - name: Run dbt
-        working-directory: ./dbt_olist/dbt_olist
+        working-directory: ./dbt_olist
         env:
           DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
           HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
