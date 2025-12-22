@@ -5,7 +5,7 @@ dbt_olist:
       type: postgres
       threads: 4
       host: "{{ env_var('HOST_DBT_OLIST') }}"
-      port: {{ env_var('PORT_DBT_OLIST') | int }}
+      port: "{{ env_var('PORT_DBT_OLIST') | int }}"
       user: "{{ env_var('USER_DBT_OLIST') }}"
       pass: "{{ env_var('PASSWORD_DBT_OLIST') }}"
       dbname: "{{ env_var('DBNAME_DBT_OLIST') }}"
