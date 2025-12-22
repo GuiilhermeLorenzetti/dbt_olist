@@ -10,3 +10,13 @@ dbt_olist:
       pass: "{{ env_var('PASSWORD_DBT_OLIST') }}"
       dbname: "{{ env_var('DBNAME_DBT_OLIST') }}"
       schema: public
+
+    dev:
+      type: postgres
+      threads: 4
+      host: "{{ env_var('HOST_DBT_OLIST') }}"
+      port: "{{ env_var('PORT_DBT_OLIST') | int }}"
+      user: "{{ env_var('USER_DBT_OLIST') }}"
+      pass: "{{ env_var('PASSWORD_DBT_OLIST') }}"
+      dbname: "{{ env_var('DBNAME_DBT_OLIST') }}"
+      schema: dbt_olist_dev

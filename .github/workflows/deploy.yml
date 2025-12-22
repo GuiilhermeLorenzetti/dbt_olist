@@ -4,11 +4,21 @@ on:
   push:
     branches:
       - main
+  pull_request:
+
+env:
+  DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
+  HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
+  PASSWORD_DBT_OLIST: ${{ secrets.PASSWORD_DBT_OLIST }}
+  PORT_DBT_OLIST: ${{ secrets.PORT_DBT_OLIST }}
+  USER_DBT_OLIST: ${{ secrets.USER_DBT_OLIST }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./dbt_olist
 
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +32,60 @@ jobs:
         run: |
           pip install dbt-postgres
 
-      - name: Run dbt
-        working-directory: ./dbt_olist
-        env:
-          DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
-          HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
-          PASSWORD_DBT_OLIST: ${{ secrets.PASSWORD_DBT_OLIST }}
-          PORT_DBT_OLIST: ${{ secrets.PORT_DBT_OLIST }}
-          USER_DBT_OLIST: ${{ secrets.USER_DBT_OLIST }}
+      - name: Download manifest (Slim CI)
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          workflow: deploy.yml
+          workflow_conclusion: success
+          name: manifest
+          path: ./dbt_olist/state
+          if_no_artifact_found: warn
+
+      - name: Run dbt (Pull Request)
+        if: github.event_name == 'pull_request'
+        run: |
+          dbt deps
+          dbt debug --profiles-dir . --target dev
+
+          if [ -f "./state/manifest.json" ]; then
+            echo "Running Slim CI on DEV (modified models only, deferring to PROD)"
+            dbt run --profiles-dir . --target dev --select state:modified+ --defer --state ./state
+            dbt test --profiles-dir . --target dev --select state:modified+ --defer --state ./state
+          else
+            echo "No manifest found. Running Full CI on DEV"
+            dbt run --profiles-dir . --target dev
+            dbt test --profiles-dir . --target dev
+          fi
+
+      - name: Run dbt (Main Branch)
+        if: github.ref == 'refs/heads/main'
         run: |
           dbt deps
           dbt debug --profiles-dir . --target prod
-          dbt run --profiles-dir . --target prod
-          dbt test --profiles-dir . --target prod
+
+          if [ -f "./state/manifest.json" ]; then
+            echo "Running Slim CI on PROD (modified models only)"
+            dbt run --profiles-dir . --target prod --select state:modified+ --defer --state ./state
+            # Note: We might want to execute 'dbt docs generate' or similar to ensure a FRESH complete manifest is generated?
+            # actually 'dbt run' updates the manifest in target/ with the nodes it ran. 
+            # To preserve the FULL manifest for the next run, we ideally need to merge or ensure the manifest represents the whole project.
+            # However, dbt run only updates the invoked nodes in the RunResult. 
+            # IMPORTANT: For deferral to work next time, we need a manifest representing the FULL 'prod' state.
+            # Since we only ran modified, the 'target/manifest.json' might be incomplete or only represent the run subset depending on dbt version/flags.
+            # Best practice for Slim CI on Main: We still need a full manifest for the NEXT comparison.
+            # We can run 'dbt compile' to generate a full manifest without running the models.
+            dbt compile --profiles-dir . --target prod
+            
+            dbt test --profiles-dir . --target prod --select state:modified+ --defer --state ./state
+          else
+            echo "No manifest found. Running Full CI on PROD"
+            dbt run --profiles-dir . --target prod
+            dbt test --profiles-dir . --target prod
+          fi
+
+      - name: Upload manifest
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest
+          path: ./dbt_olist/target/manifest.json
