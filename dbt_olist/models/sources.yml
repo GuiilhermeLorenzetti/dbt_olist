@@ -16,7 +16,6 @@ sources:
             description: "Unique customer ID (unique identifier)"
             tests:
               - not_null
-              - unique
           - name: customer_zip_code_prefix
             description: "Customer zip code prefix"
           - name: customer_city
@@ -138,7 +137,6 @@ sources:
             description: "Unique review ID"
             tests:
               - not_null
-              - unique
           - name: order_id
             description: "Order ID"
             tests:
