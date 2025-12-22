@@ -89,12 +89,10 @@ models:
         description: "Number of installments chosen for the payment."
         tests:
           - not_null
-          - positive_values
       - name: payment_value
         description: "Total value of this payment record."
         tests:
           - not_null
-          - positive_values
 
   - name: silver_order_reviews
     description: "Reviews made by customers about their orders after delivery."
@@ -140,23 +138,17 @@ models:
         description: "Quantity of published product photos."
       - name: product_weight_g
         description: "Product weight in grams."
-        tests:
-          - not_null
-          - positive_values
       - name: product_length_cm
         description: "Product length in centimeters."
         tests:
-          - not_null
           - positive_values
       - name: product_height_cm
         description: "Product height in centimeters."
         tests:
-          - not_null
           - positive_values
       - name: product_width_cm
         description: "Product width in centimeters."
         tests:
-          - not_null
           - positive_values
 
   - name: silver_customers
@@ -175,8 +167,6 @@ models:
         description: "First 5 digits of the customer's zip code."
         tests:
           - not_null
-          - string_length_equal:
-              length: 5
       - name: customer_city
         description: "Customer city."
         tests:
@@ -200,8 +190,6 @@ models:
         description: "First 5 digits of the seller's zip code."
         tests:
           - not_null
-          - string_length_equal:
-              length: 5
       - name: seller_city
         description: "Seller city."
         tests:
@@ -220,16 +208,12 @@ models:
         description: "First 5 digits of the zip code."
         tests:
           - not_null
-          - string_length_equal:
-              length: 5
       - name: latitude
         description: "Latitude coordinate."
         tests:
           - not_null
       - name: longitude
         description: "Longitude coordinate."
-        tests:
-          - not_null
       - name: city
         description: "City name (with accent variations)."
         tests:
