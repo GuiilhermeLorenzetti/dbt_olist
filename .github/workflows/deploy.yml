@@ -33,6 +33,7 @@ jobs:
           pip install dbt-postgres
 
       - name: Download manifest (Slim CI)
+
         uses: dawidd6/action-download-artifact@v8
         with:
           workflow: deploy.yml
@@ -40,6 +41,7 @@ jobs:
           name: manifest
           path: ./dbt_olist/state
           if_no_artifact_found: warn
+
 
       - name: Run dbt (Pull Request)
         if: github.event_name == 'pull_request'
@@ -63,6 +65,7 @@ jobs:
           dbt deps
           dbt debug --profiles-dir . --target prod
 
+
           if [ -f "./state/manifest.json" ]; then
             echo "Running Slim CI on PROD (modified models only)"
             dbt run --profiles-dir . --target prod --select state:modified+ --defer --state ./state
@@ -79,6 +82,7 @@ jobs:
             dbt test --profiles-dir . --target prod --select state:modified+ --defer --state ./state
           else
             echo "No manifest found. Running Full CI on PROD"
+
             dbt run --profiles-dir . --target prod
             dbt test --profiles-dir . --target prod
           fi
