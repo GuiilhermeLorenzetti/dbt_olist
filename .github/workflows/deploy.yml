@@ -4,11 +4,21 @@ on:
   push:
     branches:
       - main
+  pull_request:
+
+env:
+  DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
+  HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
+  PASSWORD_DBT_OLIST: ${{ secrets.PASSWORD_DBT_OLIST }}
+  PORT_DBT_OLIST: ${{ secrets.PORT_DBT_OLIST }}
+  USER_DBT_OLIST: ${{ secrets.USER_DBT_OLIST }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./dbt_olist
 
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +32,34 @@ jobs:
         run: |
           pip install dbt-postgres
 
+      - name: Download manifest (Slim CI)
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: deploy.yml
+          workflow_conclusion: success
+          name: manifest
+          path: ./dbt_olist/state
+          if_no_artifact_found: warn
+
       - name: Run dbt
-        working-directory: ./dbt_olist
-        env:
-          DBNAME_DBT_OLIST: ${{ secrets.DBNAME_DBT_OLIST }}
-          HOST_DBT_OLIST: ${{ secrets.HOST_DBT_OLIST }}
-          PASSWORD_DBT_OLIST: ${{ secrets.PASSWORD_DBT_OLIST }}
-          PORT_DBT_OLIST: ${{ secrets.PORT_DBT_OLIST }}
-          USER_DBT_OLIST: ${{ secrets.USER_DBT_OLIST }}
         run: |
           dbt deps
           dbt debug --profiles-dir . --target prod
-          dbt run --profiles-dir . --target prod
-          dbt test --profiles-dir . --target prod
+
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ -f "./state/manifest.json" ]; then
+            echo "Running Slim CI (modified models only)"
+            dbt run --profiles-dir . --target prod --select state:modified+ --defer --state ./state
+            dbt test --profiles-dir . --target prod --select state:modified+ --defer --state ./state
+          else
+            echo "Running Full CI"
+            dbt run --profiles-dir . --target prod
+            dbt test --profiles-dir . --target prod
+          fi
+
+      - name: Upload manifest
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest
+          path: ./dbt_olist/target/manifest.json
