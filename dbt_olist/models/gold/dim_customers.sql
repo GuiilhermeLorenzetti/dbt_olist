@@ -54,4 +54,6 @@ final AS (
         rco.customer_state
 )
 
-SELECT * FROM final
+SELECT *,
+    CURRENT_DATE as last_updated_at 
+ FROM final

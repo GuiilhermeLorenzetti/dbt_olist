@@ -63,4 +63,7 @@ final AS (
         ON ord.order_id = rev.order_id
 )
 
-SELECT * FROM final
+SELECT 
+    *,
+    CURRENT_DATE as last_updated_at 
+ FROM final
